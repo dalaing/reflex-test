@@ -17,12 +17,14 @@ cabal-version:       >=1.10
 
 library
   exposed-modules:     Reflex.Test
+                     , Reflex.Test.Common
                      , Reflex.Dom.Test
                      , Reflex.Dom.Test.Id
                      , Reflex.Dom.Test.Class
                      , Reflex.Dom.Test.Tag
                      , Reflex.Dom.Test.Text
                      , Reflex.Dom.Test.Button
+                     , Reflex.Dom.Test.Widgets
                      -- , Reflex.Dom.Widget.Basic.Test
                      -- , Reflex.Dom.Widget.Input.Test
   build-depends:       base >=4.9 && <4.10
@@ -30,6 +32,7 @@ library
                      , stm >= 2.4 && < 2.5
                      , reflex >= 0.5 && < 0.6
                      , reflex-dom >= 0.4 && < 0.5
+                     , containers
                      , transformers
                      , text
                      , ghcjs-dom
