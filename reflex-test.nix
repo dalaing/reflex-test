@@ -1,4 +1,4 @@
-{ mkDerivation, base, containers, ghcjs-dom, jsaddle-dom, mtl
+{ mkDerivation, base, containers, ghcjs-dom, jsaddle-dom, lens, mtl
 , reflex, reflex-basic-host, reflex-dom, stdenv, stm, text
 , transformers
 }:
@@ -7,8 +7,8 @@ mkDerivation {
   version = "0.1.0.0";
   src = ./.;
   libraryHaskellDepends = [
-    base containers ghcjs-dom jsaddle-dom mtl reflex reflex-basic-host
-    reflex-dom stm text transformers
+    base containers ghcjs-dom jsaddle-dom lens mtl reflex
+    reflex-basic-host reflex-dom stm text transformers
   ];
   license = stdenv.lib.licenses.bsd3;
 }
