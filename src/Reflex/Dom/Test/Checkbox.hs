@@ -5,12 +5,13 @@ Maintainer  : dave.laing.80@gmail.com
 Stability   : experimental
 Portability : non-portable
 -}
-module Reflex.Test.Checkbox (
+module Reflex.Dom.Test.Checkbox (
     getChecked
   , setChecked
   , toggleChecked
   ) where
 
+import Control.Monad (unless)
 import Control.Monad.Trans (lift)
 import Control.Monad.Trans.Maybe (MaybeT(..))
 
@@ -29,19 +30,18 @@ getChecked e = do
 
 setChecked ::
   MonadJSM m =>
-  Element ->
   Bool ->
+  Element ->
   MaybeT m ()
-setChecked e b = do
-  he <- MaybeT $ castTo HE.HTMLElement e
-  lift $ HE.click he
-  hie <- MaybeT $ castTo HIE.HTMLInputElement e
-  lift $ HIE.setChecked hie b
+setChecked b e = do
+  bOld <- getChecked e
+  unless (b == bOld) $
+    toggleChecked e
 
 toggleChecked ::
   MonadJSM m =>
   Element ->
   MaybeT m ()
 toggleChecked e = do
-  b <- getChecked e
-  setChecked e (not b)
+  he <- MaybeT $ castTo HE.HTMLElement e
+  lift $ HE.click he

@@ -22,6 +22,8 @@ import Data.Proxy (Proxy(..))
 import Control.Monad.Trans (liftIO)
 import Control.Monad.Trans.Maybe (MaybeT(..))
 
+import Control.Lens
+
 import GHCJS.DOM (currentDocumentUnchecked)
 import GHCJS.DOM.Types (MonadJSM, JSM)
 
@@ -37,6 +39,7 @@ import Reflex.Test.Common
 import Reflex.Dom.Test.Id
 import Reflex.Dom.Test.Text
 import Reflex.Dom.Test.Button
+import Reflex.Dom.Test.Checkbox
 import Reflex.Dom.Test.Widgets
 
 data DomFrame a = DomFrame { unDomFrame :: MaybeT JSM a }
@@ -120,6 +123,18 @@ example = do
   dToggle <- toggle False eToggle
   displayDivWithId "toggle" dToggle
 
+  eCheckTrue <- buttonWithId "check-true-button" "Check true"
+  eCheckFalse <- buttonWithId "check-true-button" "Check false"
+  cb <- checkbox False $ def & attributes .~ pure ("id" =: "check-cb")
+                             & setValue .~ leftmost [True <$ eCheckTrue, False <$ eCheckFalse]
+
+  displayDivWithId "check-d" (value cb)
+
+  d <- holdDyn False $ view checkbox_change cb
+  displayDivWithId "check-e" d
+
+  pure ()
+
 -- Output (due to printing) is:
 -- [ Just 0 :+: Just False
 -- , Just 1 :+: Just False
@@ -127,21 +142,54 @@ example = do
 -- , Just 2 :+: Just True
 -- , Just 3 :+: Just True
 -- ]
-runExample :: IO [ReadResult (DomFrame Int :+: DomFrame Bool)]
+  -- [(Just 0 :+: Just False) :+: Just False
+  -- ,(Just 1 :+: Just False) :+: Just False
+  -- ,(Just 2 :+: Just False) :+: Just False
+  -- ,(Just 2 :+: Just True) :+: Just False
+  -- ,(Just 3 :+: Just True) :+: Just False
+  -- ,(Just 3 :+: Just True) :+: Just True
+  -- had to click something to keep it all ticking over
+  -- ,(Just 4 :+: Just True) :+: Just True
+  -- ,(Just 4 :+: Just True) :+: Just False
+  -- ,(Just 4 :+: Just True) :+: Just True
+  -- ,(Just 4 :+: Just True) :+: Just False
+  -- ]
+
+runExample :: IO [ReadResult (DomFrame Int :+: DomFrame Bool :+: DomFrame Bool :+: DomFrame Bool :+: DomFrame Bool)]
 runExample = do
   let
     clickCount =
       idElement "count-button" >>= clickButton
     clickToggle =
       idElement "toggle-button" >>= clickButton
+    setCheck b =
+      idElement "check-cb" >>= setChecked b
+    toggleCheck =
+      idElement "check-cb" >>= toggleChecked
 
-    inputs = fmap DomFrame [clickCount, clickCount, clickToggle, clickCount]
+    inputs = fmap DomFrame
+      [ clickCount
+      , clickCount
+      , clickToggle
+      , clickCount
+      , setCheck True
+      , setCheck True
+      , setCheck False
+      , toggleCheck
+      , toggleCheck
+      ]
 
     readCount =
       idElement "count" >>= readText (Proxy :: Proxy Int)
     readToggle =
       idElement "toggle" >>= readText (Proxy :: Proxy Bool)
+    readCheck1 =
+      idElement "check-cb" >>= getChecked
+    readCheck2 =
+      idElement "check-d" >>= readText (Proxy :: Proxy Bool)
+    readCheck3 =
+      idElement "check-e" >>= readText (Proxy :: Proxy Bool)
 
-    outputs = DomFrame readCount :+: DomFrame readToggle
+    outputs = DomFrame readCount :+: DomFrame readToggle :+: DomFrame readCheck1 :+: DomFrame readCheck2 :+: DomFrame readCheck3
 
   testWidget inputs outputs example

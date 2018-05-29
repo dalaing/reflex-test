@@ -24,6 +24,7 @@ library
                      , Reflex.Dom.Test.Tag
                      , Reflex.Dom.Test.Text
                      , Reflex.Dom.Test.Button
+                     , Reflex.Dom.Test.Checkbox
                      , Reflex.Dom.Test.Widgets
                      -- , Reflex.Dom.Widget.Basic.Test
                      -- , Reflex.Dom.Widget.Input.Test
@@ -32,6 +33,7 @@ library
                      , stm >= 2.4 && < 2.5
                      , reflex >= 0.5 && < 0.6
                      , reflex-dom >= 0.4 && < 0.5
+                     , lens
                      , containers
                      , transformers
                      , text

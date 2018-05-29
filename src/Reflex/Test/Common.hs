@@ -15,6 +15,8 @@ import Data.Proxy (Proxy(..))
 
 import Reflex
 
+infixr 4 :+:
+
 data a :+: b = a :+: b
   deriving (Eq, Ord, Show, Read)
 
